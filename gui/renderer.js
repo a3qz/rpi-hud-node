@@ -5,6 +5,13 @@ var events = [];
 var food = [];
 var googCal = require('../calendar/listEvents');
 
+function writer(){
+    document.getElementById('event-container').innerHTML = "";
+    events.forEach(function(eve){
+        writeBlock("event", eve.summary, eve.description, eve.start.dateTime);
+    })
+}
+
 function startTime() {
     var today = new Date();
     var h = today.getHours();
@@ -15,38 +22,35 @@ function startTime() {
     document.getElementById('clk').innerHTML =
     h + ":" + m + ":" + s;
     var t = setTimeout(startTime, 500);
+    var w = setTimeout(writer, 5000);
 }
 function checkTime(i) {
     if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
     return i;
 }
 startTime();
+fetchEvents();
+writer();
 
 function writeBlock(id, title, description, date ){
-  document.getElementById(id).innerHTML +=
-  `<div id='${id}'> <h1>${title}</h1><body id='${id}'><p>${description}</p><p>${date}</p></body></div><br />&nbsp <br/>`;
-}
-/*
-document.getElementById('divA').innerHTML =
-"<div class='well' id='food'> <h1>Hello</h1><p>World</p></div>";
-document.getElementById('divA').innerHTML +=
-"<div class='well' id='food'> <h1>Hello</h1><p>World</p></div>";
-setTimeout(function(){
-  document.getElementById('divA').innerHTML +=
-  "<div class='well' id='food'> <h1>Hello</h1><p>World</p></div>";
-}, 5000);
-document.getElementById('divB').innerHTML =
-"<div class='well' id='event'> <h1>Hello</h1><p>World</p></div>";
-*/
-
-googCal.listEvents().then(function(element){
-  events = element;
-    //element.forEach(function(eve){
-    //    writeBlock("event", eve.summary, eve.description, eve.start.dateTime);
-    //});
-});
+  document.getElementById(id + "-container").innerHTML +=
+  `
+    <div id='${id}' class="panel panel-default">
+      <div class="panel-heading">${title}</div>
+        <div class="panel-body">
+           ${description} 
+            <br />
+           ${date}
+        </div>
+    </div>
+  ` 
+  }
 //writeBlock("food", "Hello", "world", "1234")
 //writeBlock("event", "Hello", "world", "1234")
-events.forEach(function(eve){
-    writeBlock("event", eve.summary, eve.description, eve.start.dateTime);
-})
+function fetchEvents(){
+    googCal.listEvents().then(function(element){
+      events = [];
+      events = element;
+    });
+    var e = setTimeout(fetchEvents, 30000)
+}
