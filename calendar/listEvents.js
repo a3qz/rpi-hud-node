@@ -11,15 +11,9 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 var TOKEN_PATH = TOKEN_DIR + 'calendar-nodejs-quickstart.json';
 
 // Load client secrets from a local file.
-fs.readFile('client_secret.json', function processClientSecrets(err, content) {
-  if (err) {
-    console.log('Error loading client secret file: ' + err);
-    return;
-  }
-  // Authorize a client with the loaded credentials, then call the
-  // Google Calendar API.
-  authorize(JSON.parse(content), addEvent);
-});
+function processor(){
+    return authorize(JSON.parse(fs.readFileSync('../client_secret.json')), listEvents);
+ }
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -36,14 +30,11 @@ function authorize(credentials, callback) {
   var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
   // Check if we have previously stored a token.
-  fs.readFile(TOKEN_PATH, function(err, token) {
-    if (err) {
-      getNewToken(oauth2Client, callback);
-    } else {
-      oauth2Client.credentials = JSON.parse(token);
-      callback(oauth2Client);
-    }
-  });
+  
+  oauth2Client.credentials = JSON.parse(fs.readFileSync(TOKEN_PATH));
+  return callback(oauth2Client);
+
+
 }
 
 /**
@@ -102,6 +93,7 @@ function storeToken(token) {
  */
 function listEvents(auth) {
   var calendar = google.calendar('v3');
+  return new Promise(function(resolve, reject){
   calendar.events.list({
     auth: auth,
     calendarId: 'primary',
@@ -116,16 +108,19 @@ function listEvents(auth) {
     }
     var events = response.items;
     if (events.length == 0) {
-      console.log('No upcoming events found.');
+      //console.log('No upcoming events found.');
     } else {
-      console.log('Upcoming 10 events:');
+      //console.log('Upcoming 10 events:');
       for (var i = 0; i < events.length; i++) {
         var event = events[i];
         var start = event.start.dateTime || event.start.date;
-        console.log('%s - %s', start, event.summary);
+        //console.log('%s - %s', start, event.summary);
       }
+      resolve(events);
     }
   });
+  })
+  
 }
 
 function addEvent(auth){
@@ -200,3 +195,4 @@ calendar.events.insert({
   });
 }
 
+module.exports.listEvents = processor;
