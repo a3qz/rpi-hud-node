@@ -1,0 +1,38 @@
+
+
+#blocks {
+    background-color: #212121;
+    color: #76FF03;
+}
+#clk{
+  font-size: 12em;
+  text-align: center;
+}
+#food{
+  font-size: 1em;
+  background-color: #FFEB3B;
+  color: #212121;
+  text-align: center;
+}
+ #food > p{
+   text-align: left;
+      background-color: #FFCDD2;
+ }
+
+ #event{
+  font-size: 1em;
+   background-color: #F44336;
+   color: #212121;
+   text-align: center;
+ }
+ #event > p{
+   text-align: left;
+   background-color: #FFCDD2;
+ }
+
+ #event > h1{
+  font-size: 1.25em;
+ }
+ td {
+    vertical-align: top;
+ }
